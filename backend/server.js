@@ -23,7 +23,7 @@ app.use(express.static('public'));
 
 // Routes
 readdirSync('./routes').map((r) => {
-  app.use('/api', require(`./routes/${r}`));
+  app.use('/', require(`./routes/${r}`));
 });
 
 // Start server
