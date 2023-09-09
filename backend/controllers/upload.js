@@ -7,6 +7,28 @@ cloudinary.config({
   api_secret: process.env.CLOUD_API_SECRET,
 });
 
+exports.listImages = async (req, res) => {
+  try {
+    const { path, sort, max } = req.body;
+
+    cloudinary.v2.search
+      .expression(`folder=${path}`)
+      .sort_by('created_at', `${sort}`)
+      .max_results(max)
+      .execute()
+      .then((result) => {
+        res.json(result);
+      })
+      .catch((error) => {
+        console.log('listImages() - error', error);
+        return res.status(500).json({ message: error.message });
+      });
+  } catch (error) {
+    console.log('listImages() - error', error);
+    return res.status(500).json({ message: error.message });
+  }
+};
+
 exports.uploadImages = async (req, res) => {
   try {
     const { path } = req.body;
@@ -18,7 +40,7 @@ exports.uploadImages = async (req, res) => {
       images.push(url);
     }
 
-    res.json({ images });
+    res.json(images);
   } catch (error) {
     console.log('uploadImages() - error', error);
     return res.status(500).json({ message: error.message });
@@ -44,7 +66,7 @@ const uploadToCloudinary = async (file, path = 'temp') => {
           return reject(error);
         }
 
-        resolve(result.secure_url);
+        resolve(result);
       }
     );
   });

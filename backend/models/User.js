@@ -115,7 +115,7 @@ const userSchema = new mongoose.Schema(
       },
     ],
 
-    detials: {
+    details: {
       bio: {
         type: String,
       },

@@ -1,5 +1,16 @@
 const Post = require('../models/Post');
 
+exports.getAllPosts = async (req, res) => {
+  try {
+    const posts = await Post.find()
+      .populate('user', 'first_name last_name picture username gender')
+      .sort({ createdAt: -1 });
+    res.json(posts);
+  } catch (error) {
+    console.log('getAllPosts() - error', error);
+  }
+};
+
 exports.createPost = async (req, res) => {
   try {
     const post = await new Post(req.body).save();
