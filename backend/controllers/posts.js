@@ -8,6 +8,7 @@ exports.getAllPosts = async (req, res) => {
     res.json(posts);
   } catch (error) {
     console.log('getAllPosts() - error', error);
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -17,7 +18,6 @@ exports.createPost = async (req, res) => {
     res.json(post);
   } catch (error) {
     console.log('createPost() - error', error);
-
-    return res.status(500).json({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
