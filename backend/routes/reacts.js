@@ -1,5 +1,5 @@
 const express = require('express');
-const { reactPost, getReacts } = require('../controllers/react');
+const { reactPost, getReacts } = require('../controllers/reacts');
 const { authUser } = require('../middlewares/auth');
 const router = express.Router();
 
