@@ -2,47 +2,44 @@ const mongoose = require('mongoose');
 
 const { ObjectId } = mongoose.Schema;
 
-const userSchema = new mongoose.Schema(
+const userSchema = mongoose.Schema(
   {
     first_name: {
       type: String,
+      required: [true, 'first name is required'],
       trim: true,
-      required: [true, 'First name is required'],
       text: true,
-      max: 32,
     },
 
     last_name: {
       type: String,
+      required: [true, 'last name is required'],
       trim: true,
-      required: [true, 'Last name is required'],
       text: true,
-      max: 32,
     },
 
     username: {
       type: String,
+      required: [true, 'username is required'],
       trim: true,
-      required: [true, 'Username is required'],
       text: true,
       unique: true,
     },
 
     email: {
       type: String,
+      required: [true, 'email is required'],
       trim: true,
-      required: [true, 'Email is required'],
-      unique: true,
-      lowercase: true,
     },
 
     password: {
       type: String,
-      required: [true, 'Password is required'],
+      required: [true, 'password is required'],
     },
 
     picture: {
       type: String,
+      trim: true,
       default:
         'https://res.cloudinary.com/dmhcnhtng/image/upload/v1643044376/avatars/default_pic_jeaybr.png',
     },
@@ -54,31 +51,26 @@ const userSchema = new mongoose.Schema(
 
     gender: {
       type: String,
-      require: [true, 'Gender is required'],
-    },
-
-    role: {
-      type: [String],
-      default: ['Subscriber'],
-      enum: ['Subscriber', 'Instructor', 'Admin'],
+      required: [true, 'gender is required'],
+      trim: true,
     },
 
     bYear: {
       type: Number,
+      required: true,
       trim: true,
-      required: [true, 'Birth year is required'],
     },
 
     bMonth: {
       type: Number,
+      required: true,
       trim: true,
-      required: [true, 'Birth month is required'],
     },
 
     bDay: {
       type: Number,
+      required: true,
       trim: true,
-      required: [true, 'Birth day is required'],
     },
 
     verified: {
@@ -86,25 +78,33 @@ const userSchema = new mongoose.Schema(
       default: false,
     },
 
-    friends: {
-      type: Array,
-      default: [],
-    },
+    friends: [
+      {
+        type: ObjectId,
+        ref: 'User',
+      },
+    ],
 
-    following: {
-      type: Array,
-      default: [],
-    },
+    following: [
+      {
+        type: ObjectId,
+        ref: 'User',
+      },
+    ],
 
-    followers: {
-      type: Array,
-      default: [],
-    },
+    followers: [
+      {
+        type: ObjectId,
+        ref: 'User',
+      },
+    ],
 
-    requests: {
-      type: Array,
-      default: [],
-    },
+    requests: [
+      {
+        type: ObjectId,
+        ref: 'User',
+      },
+    ],
 
     search: [
       {
@@ -150,26 +150,10 @@ const userSchema = new mongoose.Schema(
 
       relationship: {
         type: String,
-        enum: [
-          'Single',
-          'In a relationship',
-          'Engaged',
-          'Married',
-          'It is complicated',
-          'In an open relationship',
-          'Widowed',
-          'Separated',
-          'Divorced',
-          'In a civil union',
-          'In a domestic partnership',
-        ],
+        enum: ['Single', 'In a relationship', 'Married', 'Divorced'],
       },
 
       instagram: {
-        type: String,
-      },
-
-      currentCity: {
         type: String,
       },
     },
@@ -182,12 +166,14 @@ const userSchema = new mongoose.Schema(
         },
         savedAt: {
           type: Date,
-          default: Date(),
+          default: new Date(),
         },
       },
     ],
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  }
 );
 
 module.exports = mongoose.model('User', userSchema);

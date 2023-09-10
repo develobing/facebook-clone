@@ -4,7 +4,7 @@ import Cropper from 'react-easy-crop';
 import { useDispatch, useSelector } from 'react-redux';
 import { createPost } from '../../functions/post';
 import { uploadImages } from '../../functions/uploadImages';
-import { updateprofilePicture } from '../../functions/user';
+import { updateProfilePicture } from '../../functions/user';
 import getCroppedImg from '../../helpers/getCroppedImg';
 import PulseLoader from 'react-spinners/PulseLoader';
 import Cookies from 'js-cookie';
@@ -57,7 +57,7 @@ export default function UpdateProfilePicture({
     [croppedAreaPixels]
   );
 
-  const updateProfilePicture = async () => {
+  const handleUpdateProfilePicture = async () => {
     try {
       setLoading(true);
       let img = await getCroppedImage();
@@ -66,9 +66,8 @@ export default function UpdateProfilePicture({
       let formData = new FormData();
       formData.append('file', blob);
       formData.append('path', path);
-
       const res = await uploadImages(formData, path, user.token);
-      const updated_picture = await updateprofilePicture(
+      const updated_picture = await updateProfilePicture(
         res[0].url,
         user.token
       );
@@ -185,7 +184,7 @@ export default function UpdateProfilePicture({
         <button
           className="blue_btn"
           disabled={loading}
-          onClick={() => updateProfilePicture()}
+          onClick={() => handleUpdateProfilePicture()}
         >
           {loading ? <PulseLoader color="#fff" size={5} /> : 'Save'}
         </button>
