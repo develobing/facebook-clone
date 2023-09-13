@@ -21,7 +21,7 @@ import AllMenu from './AllMenu';
 import useClickOutside from '../../helpers/clickOutside';
 import UserMenu from './userMenu';
 
-export default function Header({ page }) {
+export default function Header({ page, getAllPosts }) {
   const { user } = useSelector((user) => ({ ...user }));
   const color = '#65676b';
   const [showSearchMenu, setShowSearchMenu] = useState(false);
@@ -33,6 +33,7 @@ export default function Header({ page }) {
   useClickOutside(allmenu, () => {
     setShowAllMenu(false);
   });
+
   useClickOutside(usermenu, () => {
     setShowUserMenu(false);
   });
@@ -69,6 +70,7 @@ export default function Header({ page }) {
         <Link
           to="/"
           className={`middle_icon ${page === 'home' ? 'active' : 'hover1'}`}
+          onClick={() => getAllPosts()}
         >
           {page === 'home' ? <HomeActive /> : <Home color={color} />}
         </Link>
@@ -114,7 +116,6 @@ export default function Header({ page }) {
 
           {showAllMenu && <AllMenu />}
         </div>
-
         <div className="circle_icon hover1">
           <Messenger />
         </div>

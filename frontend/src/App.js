@@ -47,17 +47,34 @@ function App() {
   return (
     <div className="App">
       {user && visible && (
-        <CreatePostPopup user={user} setVisible={setVisible} />
+        <CreatePostPopup
+          user={user}
+          setVisible={setVisible}
+          posts={posts}
+          dispatch={dispatch}
+        />
       )}
 
       <Routes>
         <Route element={<LoggedInRoutes />}>
           <Route
             path="/"
-            element={<Home posts={posts} setVisible={setVisible} />}
+            element={
+              <Home loading={loading} posts={posts} setVisible={setVisible} />
+            }
           />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/profile/:username" element={<Profile />} />
+          <Route
+            path="/profile"
+            element={
+              <Profile setVisible={setVisible} getAllPosts={getAllPosts} />
+            }
+          />
+          <Route
+            path="/profile/:username"
+            element={
+              <Profile setVisible={setVisible} getAllPosts={getAllPosts} />
+            }
+          />
           <Route path="/activate/:token" element={<Activate />} />
         </Route>
 

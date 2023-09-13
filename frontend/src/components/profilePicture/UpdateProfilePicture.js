@@ -72,7 +72,7 @@ export default function UpdateProfilePicture({
         user.token
       );
       if (updated_picture === 'ok') {
-        const new_post = await createPost(
+        const { status, data } = await createPost(
           'profilePicture',
           null,
           description,
@@ -80,7 +80,7 @@ export default function UpdateProfilePicture({
           user.id,
           user.token
         );
-        if (new_post === 'ok') {
+        if (status === 'ok') {
           setLoading(false);
           setImage('');
           pRef.current.style.backgroundImage = `url(${res[0].url})`;

@@ -3,10 +3,10 @@ import './style.css';
 import Moment from 'react-moment';
 import { Dots, Public } from '../../svg';
 import ReactsPopup from './ReactsPopup';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import CreateComment from './CreateComment';
 import PostMenu from './PostMenu';
-import { getReacts, reactPost } from '../../functions/post';
+import { comment, getReacts, reactPost } from '../../functions/post';
 import Comment from './Comment';
 
 export default function Post({ post, user, profile }) {
@@ -16,6 +16,7 @@ export default function Post({ post, user, profile }) {
   const [check, setCheck] = useState();
   const [total, setTotal] = useState(0);
   const [count, setCount] = useState(1);
+  const [checkSaved, setCheckSaved] = useState();
   const [comments, setComments] = useState([]);
 
   useEffect(() => {
@@ -31,6 +32,7 @@ export default function Post({ post, user, profile }) {
     setReacts(res.reacts);
     setCheck(res.check);
     setTotal(res.total);
+    setCheckSaved(res.checkSaved);
   };
 
   const reactHandler = async (type) => {
@@ -63,15 +65,20 @@ export default function Post({ post, user, profile }) {
     setCount((prev) => prev + 3);
   };
 
+  const postRef = useRef(null);
+
   return (
-    <div className="post" style={{ width: `${profile && '100%'}` }}>
+    <div
+      className="post"
+      style={{ width: `${profile && '100%'}` }}
+      ref={postRef}
+    >
       <div className="post_header">
         <Link
           to={`/profile/${post.user.username}`}
           className="post_header_left"
         >
           <img src={post.user.picture} alt="" />
-
           <div className="header_col">
             <div className="post_profile_name">
               {post.user.first_name} {post.user.last_name}
@@ -86,7 +93,6 @@ export default function Post({ post, user, profile }) {
                   } cover picture`}
               </div>
             </div>
-
             <div className="post_profile_privacy_date">
               <Moment fromNow interval={30}>
                 {post.createdAt}
@@ -95,7 +101,6 @@ export default function Post({ post, user, profile }) {
             </div>
           </div>
         </Link>
-
         <div
           className="post_header_right hover1"
           onClick={() => setShowMenu((prev) => !prev)}
@@ -103,7 +108,6 @@ export default function Post({ post, user, profile }) {
           <Dots color="#828387" />
         </div>
       </div>
-
       {post.background ? (
         <div
           className="post_bg"
@@ -114,7 +118,6 @@ export default function Post({ post, user, profile }) {
       ) : post.type === null ? (
         <>
           <div className="post_text">{post.text}</div>
-
           {post.images && post.images.length && (
             <div
               className={
@@ -170,16 +173,15 @@ export default function Post({ post, user, profile }) {
                   (react, i) =>
                     react.count > 0 && (
                       <img
-                        key={i}
                         src={`../../../reacts/${react.react}.svg`}
                         alt=""
+                        key={i}
                       />
                     )
                 )}
           </div>
           <div className="reacts_count_num">{total > 0 && total}</div>
         </div>
-
         <div className="to_right">
           <div className="comments_count">{comments.length} comments</div>
           <div className="share_count">1 share</div>
@@ -219,6 +221,7 @@ export default function Post({ post, user, profile }) {
           <span
             style={{
               color: `
+          
           ${
             check === 'like'
               ? '#4267b2'
@@ -240,7 +243,6 @@ export default function Post({ post, user, profile }) {
             {check ? check : 'Like'}
           </span>
         </div>
-
         <div className="post_action hover1">
           <i className="comment_icon"></i>
           <span>Comment</span>
@@ -280,6 +282,12 @@ export default function Post({ post, user, profile }) {
           postUserId={post.user._id}
           imagesLength={post?.images?.length}
           setShowMenu={setShowMenu}
+          postId={post._id}
+          token={user.token}
+          checkSaved={checkSaved}
+          setCheckSaved={setCheckSaved}
+          images={post.images}
+          postRef={postRef}
         />
       )}
     </div>

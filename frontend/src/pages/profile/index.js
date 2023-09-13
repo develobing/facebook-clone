@@ -16,8 +16,10 @@ import Photos from './Photos';
 import Friends from './Friends';
 import Intro from '../../components/intro';
 import { useMediaQuery } from 'react-responsive';
+import CreatePostPopup from '../../components/createPostPopup';
 
-export default function Profile({ setVisible }) {
+export default function Profile({ getAllPosts }) {
+  const [visible, setVisible] = useState(false);
   const { username } = useParams();
   const navigate = useNavigate();
   const { user } = useSelector((state) => ({ ...state }));
@@ -40,7 +42,7 @@ export default function Profile({ setVisible }) {
 
   var visitor = userName === user.username ? false : true;
   const [othername, setOthername] = useState();
-  const path = `facebook-clone/${userName}/*`;
+  const path = `${userName}/*`;
   const max = 30;
   const sort = 'desc';
 
@@ -112,7 +114,16 @@ export default function Profile({ setVisible }) {
 
   return (
     <div className="profile">
-      <Header page="profile" />
+      {visible && (
+        <CreatePostPopup
+          user={user}
+          setVisible={setVisible}
+          posts={profile?.posts}
+          dispatch={dispatch}
+          profile
+        />
+      )}
+      <Header page="profile" getAllPosts={getAllPosts} />
 
       <div className="profile_top" ref={profileTop}>
         <div className="profile_container">
@@ -130,7 +141,6 @@ export default function Profile({ setVisible }) {
           <ProfileMenu />
         </div>
       </div>
-
       <div className="profile_bottom">
         <div className="profile_container">
           <div className="bottom_container">
@@ -182,7 +192,7 @@ export default function Profile({ setVisible }) {
                 <div className="posts">
                   {profile.posts && profile.posts.length ? (
                     profile.posts.map((post) => (
-                      <Post post={post} user={user} key={post._id} />
+                      <Post post={post} user={user} key={post._id} profile />
                     ))
                   ) : (
                     <div className="no_posts">No posts available</div>

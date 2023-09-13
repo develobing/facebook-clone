@@ -24,7 +24,7 @@ export const createPost = async (
         },
       }
     );
-    return 'ok';
+    return { status: 'ok', data };
   } catch (error) {
     console.log('createPost() - error', error);
     return error.response.data.message;
@@ -89,6 +89,43 @@ export const comment = async (postId, comment, image, token) => {
     return data;
   } catch (error) {
     console.log('comment() - error', error);
+    return error.response.data.message;
+  }
+};
+
+export const savePost = async (postId, token) => {
+  try {
+    const { data } = await axios.put(
+      `${process.env.REACT_APP_BACKEND_URL}/savePost/${postId}`,
+      {},
+
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return data;
+  } catch (error) {
+    console.log('savePost() - error', error);
+    return error.response.data.message;
+  }
+};
+
+export const deletePost = async (postId, token) => {
+  try {
+    const { data } = await axios.delete(
+      `${process.env.REACT_APP_BACKEND_URL}/deletePost/${postId}`,
+
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return data;
+  } catch (error) {
+    console.log('deletePost() - error', error);
     return error.response.data.message;
   }
 };

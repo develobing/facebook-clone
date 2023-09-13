@@ -1,12 +1,29 @@
+const User = require('../models/user');
 const Post = require('../models/Post');
 
 exports.getAllPosts = async (req, res) => {
   try {
-    const posts = await Post.find()
+    const followingTemp = await User.findById(req.user._id).select('following');
+    const following = followingTemp.following;
+    const promises = following.map((user) => {
+      return Post.find({ user: user })
+        .populate('user', 'first_name last_name picture username cover')
+        .populate('comments.commentBy', 'first_name last_name picture username')
+        .sort({ createdAt: -1 })
+        .limit(10);
+    });
+    const followingPosts = await (await Promise.all(promises)).flat();
+    const userPosts = await Post.find({ user: req.user._id })
       .populate('user', 'first_name last_name picture username cover')
       .populate('comments.commentBy', 'first_name last_name picture username')
-      .sort({ createdAt: -1 });
-    res.json(posts);
+      .sort({ createdAt: -1 })
+      .limit(10);
+    followingPosts.push(...[...userPosts]);
+    followingPosts.sort((a, b) => {
+      return b.createdAt - a.createdAt;
+    });
+
+    res.json(followingPosts);
   } catch (error) {
     console.log('getAllPosts() - error', error);
     res.status(500).json({ message: error.message });
@@ -16,6 +33,7 @@ exports.getAllPosts = async (req, res) => {
 exports.createPost = async (req, res) => {
   try {
     const post = await new Post(req.body).save();
+    await post.populate('user', 'first_name last_name cover picture username');
     res.json(post);
   } catch (error) {
     console.log('createPost() - error', error);
@@ -26,6 +44,7 @@ exports.createPost = async (req, res) => {
 exports.comment = async (req, res) => {
   try {
     const { comment, image, postId } = req.body;
+
     let newComments = await Post.findByIdAndUpdate(
       postId,
       {
@@ -41,9 +60,51 @@ exports.comment = async (req, res) => {
         new: true,
       }
     ).populate('comments.commentBy', 'picture first_name last_name username');
+
     res.json(newComments.comments);
   } catch (error) {
     console.log('createPost() - error', error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+exports.savePost = async (req, res) => {
+  try {
+    const postId = req.params.id;
+    const user = await User.findById(req.user._id);
+    const check = user?.savedPosts.find(
+      (post) => post.post.toString() == postId
+    );
+    if (check) {
+      await User.findByIdAndUpdate(req.user._id, {
+        $pull: {
+          savedPosts: {
+            _id: check._id,
+          },
+        },
+      });
+    } else {
+      await User.findByIdAndUpdate(req.user._id, {
+        $push: {
+          savedPosts: {
+            post: postId,
+            savedAt: new Date(),
+          },
+        },
+      });
+    }
+  } catch (error) {
+    console.log('savePost() - error', error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+exports.deletePost = async (req, res) => {
+  try {
+    await Post.findByIdAndRemove(req.params.id);
+    res.json({ status: 'ok' });
+  } catch (error) {
+    console.log('deletePost() - error', error);
     res.status(500).json({ message: error.message });
   }
 };

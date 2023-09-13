@@ -91,7 +91,7 @@ export default function Cover({ cover, visitor, photos }) {
       const res = await uploadImages(formData, path, user.token);
       const updated_picture = await updateCover(res[0].url, user.token);
       if (updated_picture === 'ok') {
-        const new_post = await createPost(
+        const { status, data } = await createPost(
           'coverPicture',
           null,
           null,
@@ -99,19 +99,16 @@ export default function Cover({ cover, visitor, photos }) {
           user.id,
           user.token
         );
-        console.log(new_post);
-        if (new_post === 'ok') {
+        if (status === 'ok') {
           setLoading(false);
           setCoverPicture('');
           cRef.current.src = res[0].url;
         } else {
           setLoading(false);
-
-          setError(new_post);
+          setError(status);
         }
       } else {
         setLoading(false);
-
         setError(updated_picture);
       }
     } catch (error) {
