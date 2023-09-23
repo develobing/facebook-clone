@@ -46,7 +46,6 @@ export default function Header({ page, getAllPosts }) {
             <Logo />
           </div>
         </Link>
-
         <div
           className="search search1"
           onClick={() => {
@@ -61,11 +60,13 @@ export default function Header({ page, getAllPosts }) {
           />
         </div>
       </div>
-
       {showSearchMenu && (
-        <SearchMenu color={color} setShowSearchMenu={setShowSearchMenu} />
+        <SearchMenu
+          color={color}
+          setShowSearchMenu={setShowSearchMenu}
+          token={user.token}
+        />
       )}
-
       <div className="header_middle">
         <Link
           to="/"
@@ -88,7 +89,6 @@ export default function Header({ page, getAllPosts }) {
           <Gaming color={color} />
         </Link>
       </div>
-
       <div className="header_right">
         <Link
           to="/profile"
@@ -99,7 +99,6 @@ export default function Header({ page, getAllPosts }) {
           <img src={user?.picture} alt="" />
           <span>{user?.first_name}</span>
         </Link>
-
         <div
           className={`circle_icon hover1 ${showAllMenu && 'active_header'}`}
           ref={allmenu}
